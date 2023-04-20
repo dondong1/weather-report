@@ -25,7 +25,7 @@ const WeatherReport = ({ weatherData, units }) => {
       <h2 className="conditions">
         {conditions} | FEELS LIKE {feels_like}&deg;{units}
       </h2>
-      <img src={icon}/>
+      <img src={icon} alt="" />
 
       <div className="temperature">
         <div>
