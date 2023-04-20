@@ -42,7 +42,6 @@ const Input = (props) => {
           placeholder=" "
         />
       </span>
-      <SearchResults />
     </div>
   );
 };

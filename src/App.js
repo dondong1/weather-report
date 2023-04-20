@@ -7,23 +7,24 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      cityId: "London",
+      cityId: "1277333",
       units: "C",
+      weatherData: null,
+      isLoading: true,
+      error: null,
     };
   }
 
   componentDidMount = () => {
-    this.getWeather(this.props.cityId, this.units);
-    console.log("Did Mount: ", this.units)
+    this.getWeather(this.state.cityId, this.state.units);
   };
 
-  componentDidUpdate = (prevProps) => {
+  componentDidUpdate = (prevProps, prevState) => {
     if (
-      this.props.cityId !== prevProps.cityId ||
-      this.props.units !== prevProps.units
+      this.state.cityId !== prevState.cityId ||
+      this.state.units !== prevState.units
     ) {
-      this.getWeather();
-      console.log("Did Update: ", this.getWeather())
+      this.getWeather(this.state.cityId, this.state.units);
     }
   };
 
@@ -31,30 +32,35 @@ class App extends Component {
     this.setState({
       units,
     });
-    console.log("Unit changed: ", units)
   };
 
-
-  getWeather = async () => {
-    const { cityId, units } = this.state;
-    const data = await fetch(`https://api.weatherserver.com/weather/current/:${cityId}/:${units}`)
-      // .then((res) => res.json())
-      // .then((data) => console.log(data));
-      const jsondata = await data.json();
-      console.log(jsondata)
-    // console.log("getWeather should return data: ", data)
-    this.setState({data: data});
-    console.log("getWeather should update data: ", data)
-  }
+  getWeather = async (cityId, units) => {
+    try {
+      const response = await fetch(
+        `https://api.weatherserver.com/weather/current/${cityId}/${units}`
+      );
+      if (!response.ok) {
+        throw new Error("Weather data not found");
+      }
+      const weatherData = await response.json();
+      this.setState({ weatherData, isLoading: false, error: null });
+    } catch (error) {
+      this.setState({ error: error.message, isLoading: false });
+    }
+  };
 
   render() {
-    const { cityId, units, data } = this.state;
+    const { cityId, units, weatherData, isLoading, error } = this.state;
     return (
-      <div className="weather-app" isLoading="true">
+      <div className="weather-app">
         <h1>WeatherWatch</h1>
-        <Input cityId={cityId}/>
+        <Input cityId={cityId} />
         <SetUnits value={units} onSet={this.handleUnitsChange} />
-        <WeatherReport data={data} units={units}/>
+        {isLoading && <div>Loading weather data...</div>}
+        {error && <div>{error}</div>}
+        {weatherData && (
+          <WeatherReport weatherData={weatherData} units={units} />
+        )}
       </div>
     );
   }

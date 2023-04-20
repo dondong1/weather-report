@@ -1,10 +1,10 @@
-// WeatherReport Component
 import React from "react";
 
-const WeatherReport = ({ data}) => {
-  if (!data) {
-    return <div>No data available</div>;
+const WeatherReport = ({ weatherData, units }) => {
+  if (!weatherData) {
+    return <div>No weatherData available</div>;
   }
+
   const {
     location,
     icon,
@@ -17,53 +17,52 @@ const WeatherReport = ({ data}) => {
     wind_direction,
     pressure,
     humidity,
-  } = data;
+  } = weatherData;
 
   return (
     <div className="weather-report">
-      <h2 className="big">{data.location}</h2>
-      <h2 className="conditions">{data.feels_like}</h2>  
-      <img
-        src={`https://api.weatherserver.com/icons/${data.icon}.png`}
-        alt={data.conditions}
-      />
-      
+      <h2 className="big">{location}</h2>
+      <h2 className="conditions">
+        {conditions} | FEELS LIKE {feels_like}&deg;{units}
+      </h2>
+      <img src={`https://api.weatherserver.com/icons/${icon}.png`} />
+
       <div className="temperature">
         <div>
           <p>CURRENT TEMPERATURE </p>
           <h2>
-            {data.temp}&deg;{data.units}
+            {temp}&deg;{units}
           </h2>
         </div>
         <div>
           <p> MAXIMUM TEMPERATURE</p>
           <h2>
-            {data.temp_max}&deg;{data.units}
+            {temp_max}&deg;{units}
           </h2>
         </div>
         <div>
           <p>MINIMUM TEMPERATURE</p>
           <h2>
-            {data.temp_min}&deg;{data.units}
+            {temp_min}&deg;{units}
           </h2>
         </div>
       </div>
       <div className="wind">
         <div>
           <p>WIND SPEED </p>
-          <h2>{data.wind_speed}</h2>
+          <h2>{wind_speed}</h2>
         </div>
         <div>
           <p>WIND DIRECTION</p>
-          <h2>{data.wind_direction}</h2>
+          <h2>{wind_direction}</h2>
         </div>
       </div>
       <div className="pressure">
         <div>
-          <p>PRESSURE</p> <h2> {data.pressure}</h2>
+          <p>PRESSURE</p> <h2> {pressure}</h2>
         </div>
         <div>
-          <p>HUMIDITY</p> <h2>{data.humidity}</h2>
+          <p>HUMIDITY</p> <h2>{humidity}</h2>
         </div>
       </div>
     </div>
@@ -71,4 +70,3 @@ const WeatherReport = ({ data}) => {
 };
 
 export default WeatherReport;
-
