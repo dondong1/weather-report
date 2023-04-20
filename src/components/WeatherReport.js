@@ -25,7 +25,7 @@ const WeatherReport = ({ weatherData, units }) => {
       <h2 className="conditions">
         {conditions} | FEELS LIKE {feels_like}&deg;{units}
       </h2>
-      <img src={`https://api.weatherserver.com/icons/${icon}.png`} />
+      <img src={icon}/>
 
       <div className="temperature">
         <div>
