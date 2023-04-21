@@ -1,15 +1,10 @@
-import React, { useState} from "react";
+import React, { useState } from "react";
 import debounce from "lodash.debounce";
 import SearchResults from "./SearchResults";
 
 const Input = (props) => {
   const [cityId, setCity] = useState("");
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter" && cityId.trim() !== "") {
-      selectLocation(cityId.trim());
-    }
-  };
+  const [data, setData] = useState([]);
 
   const handleCityChange = (e) => {
     const value = e.target.value;
@@ -21,12 +16,10 @@ const Input = (props) => {
 
   const selectLocation = debounce(async (cityId) => {
     const url = `https://api.weatherserver.com/weather/cities/${cityId}`;
-      const response = await fetch(url);
-      const data = await response.json();
-      if (response.ok) {
-        props.onLocationSelect(data); 
-        console.log(data)
-      } 
+    const response = await fetch(url);
+    const data = await response.json();
+    console.log("This is the search result data: ", data);
+    setData(data);
   }, 500);
 
   return (
@@ -38,10 +31,10 @@ const Input = (props) => {
           value={cityId}
           name="cityId"
           onChange={(e) => handleCityChange(e)}
-          onKeyDown={handleKeyDown}
           placeholder=" "
         />
       </span>
+      <SearchResults data={data} />
     </div>
   );
 };
