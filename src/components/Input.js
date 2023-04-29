@@ -1,26 +1,44 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import debounce from "lodash.debounce";
 import SearchResults from "./SearchResults";
 
 const Input = (props) => {
-  const [cityId, setCity] = useState("");
-  const [data, setData] = useState([]);
+  const [keyword, setKeyword] = useState("");
+  const [results, setResults] = useState([]);
+  const [searchResultsVisible, setSearchResultsVisible] = useState(false);
 
-  const handleCityChange = (e) => {
-    const value = e.target.value;
-    setCity(value);
-    if (value.trim().length >= 3) {
-      selectLocation(value.trim());
+  useEffect(() => {
+    searchLocation(keyword);
+  }, [keyword]);
+
+  const searchLocation = debounce(async (keyword) => {
+    try {
+      setSearchResultsVisible(false);
+      const response = await fetch(
+        `https://api.weatherserver.com/weather/cities/${keyword}`
+      );
+      const data = await response.json();
+      if (response.ok) {
+        setSearchResultsVisible(true);
+        setResults(data.results);
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (error) {
+      console.error(error);
     }
+  }, 500);
+
+  const handleInputChange = (e) => {
+    setKeyword(e.target.value);
+    setSearchResultsVisible(false);
   };
 
-  const selectLocation = debounce(async (cityId) => {
-    const url = `https://api.weatherserver.com/weather/cities/${cityId}`;
-    const response = await fetch(url);
-    const data = await response.json();
-    console.log("This is the search result data: ", data);
-    setData(data);
-  }, 500);
+  const handleCitySelection = (id) => {
+    props.onCitySelection(id);
+    setSearchResultsVisible(false);
+  };
 
   return (
     <div>
@@ -28,15 +46,25 @@ const Input = (props) => {
         <span className="label">LOCATION</span>
         <input
           type="text"
-          value={cityId}
-          name="cityId"
-          onChange={(e) => handleCityChange(e)}
-          placeholder=" "
+          value={keyword}
+          name="keyword"
+          placeholder="Enter city name"
+          onChange={handleInputChange}
         />
       </span>
-      <SearchResults data={data} />
+
+      {searchResultsVisible && (
+        <SearchResults
+          results={results}
+          handleCitySelection={handleCitySelection}
+        />
+      )}
     </div>
   );
+};
+
+Input.propTypes = {
+  onCitySelection: PropTypes.func.isRequired,
 };
 
 export default Input;

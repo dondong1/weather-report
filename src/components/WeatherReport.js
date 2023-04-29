@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 const WeatherReport = ({ weatherData, units }) => {
   if (!weatherData) {
@@ -68,5 +69,22 @@ const WeatherReport = ({ weatherData, units }) => {
     </div>
   );
 };
+
+WeatherReport.propTypes = {
+    weatherData: PropTypes.shape({
+      location: PropTypes.string.isRequired,
+      icon: PropTypes.string.isRequired,
+      conditions: PropTypes.string.isRequired,
+      temp: PropTypes.number.isRequired,
+      temp_max: PropTypes.number.isRequired,
+      temp_min: PropTypes.number.isRequired,
+      feels_like: PropTypes.number.isRequired,
+      wind_speed: PropTypes.number.isRequired,
+      wind_direction: PropTypes.number.isRequired,
+      pressure: PropTypes.number.isRequired,
+      humidity: PropTypes.number.isRequired,
+    }).isRequired,
+    units: PropTypes.string.isRequired,
+  };
 
 export default WeatherReport;

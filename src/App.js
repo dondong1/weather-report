@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import Input from "./components/Input";
 import SetUnits from "./components/SetUnits";
 import WeatherReport from "./components/WeatherReport";
@@ -10,7 +11,8 @@ class App extends Component {
       cityId: "1277333",
       units: "C",
       weatherData: null,
-      isLoading: true,
+      citiesData: null,
+      isLoading: false,
       error: null,
     };
   }
@@ -34,6 +36,12 @@ class App extends Component {
     });
   };
 
+  handleCitySelection = (cityId) => {
+    this.setState({
+      cityId,
+    });
+  };
+
   getWeather = async (cityId, units) => {
     try {
       const response = await fetch(
@@ -50,14 +58,14 @@ class App extends Component {
   };
 
   render() {
-    const { cityId, units, weatherData, isLoading, error } = this.state;
+    const { units, weatherData, isLoading, error } = this.state;
     return (
       <div className="weather-app">
         <h1>WeatherWatch</h1>
-        <Input cityId={cityId} />
+        <Input onCitySelection={this.handleCitySelection} />
         <SetUnits value={units} onSet={this.handleUnitsChange} />
-        {isLoading && <div>Loading weather data...</div>}
-        {error && <div>{error}</div>}
+        {isLoading && <div className="is-loading">Loading weather data...</div>}
+        {error && <div className="error-panel">{error}</div>}
         {weatherData && (
           <WeatherReport weatherData={weatherData} units={units} />
         )}
@@ -65,5 +73,24 @@ class App extends Component {
     );
   }
 }
+App.propTypes = {
+  cityId: PropTypes.string,
+  units: PropTypes.string,
+  weatherData: PropTypes.shape({
+    location: PropTypes.string.isRequired,
+    icon: PropTypes.string.isRequired,
+    conditions: PropTypes.string.isRequired,
+    temp: PropTypes.number.isRequired,
+    temp_max: PropTypes.number.isRequired,
+    temp_min: PropTypes.number.isRequired,
+    feels_like: PropTypes.number.isRequired,
+    wind_speed: PropTypes.number.isRequired,
+    wind_direction: PropTypes.number.isRequired,
+    pressure: PropTypes.number.isRequired,
+    humidity: PropTypes.number.isRequired,
+  }),
+  isLoading: PropTypes.bool,
+  error: PropTypes.string,
+};
 
 export default App;
